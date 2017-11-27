@@ -41,6 +41,7 @@
         var BCP=BOTTOMCENTERFOOD= 15;
         var RSP=RIGHTSIDEFOOD =   16;
         var LSP=LEFTSIDEFOOD  =   17;
+        var program = new Program();
         
 	                // 0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 
 	     var grid = [[ W, W, W, W, W, W, W, W, W, O, W, W, W, W, W, W, W, W, W, W], //0
@@ -222,38 +223,39 @@
     imagesInit(bottomCenterFoodPile);
     imagesInit(bottomRightFoodPile);
     
-	 function execNextProgramStep() {
+	 function execNextProgramStep(program) {
 		 if (programRunning) {
-		 	setTimeout(function() { execNextProgramStep(); }, 200);
-		 	var pc = program.getProgramCounter();
-		 	$(".programListing ol li").eq(pc - 1).removeClass("currentInstruction");
-		 	$(".programListing ol li").eq(pc).addClass("currentInstruction");
+		 	setTimeout(function() { execNextProgramStep(program); }, 200);
+		 	var pc = getProgramCounter(program);
+		 	var instructionList = $(".programListing ol li");
+		 	$(instructionList).eq(pc - 1).removeClass("currentInstruction");
+		 	$(instructionList).eq(pc).addClass("currentInstruction");
 		 	execCurrentInstruction();
 		 }
 	 }
 	 function stopProgram() {
             programRunning = false;
-			$("div.controlPanel").find(".moveUp, .moveDown, .moveLeft, .moveRight, .runProgram").prop("disabled", false);
-			$("div.controlPanel").find(".stopProgram").prop("disabled", true);
+            var controlPanel = $("div.controlPanel");
+			$(controlPanel).find(".moveUp, .moveDown, .moveLeft, .moveRight, .runProgram").prop("disabled", false);
+			$(controlPanel).find(".stopProgram").prop("disabled", true);
 			$(".programListing ol li").removeClass("currentInstruction");
 	 }
 	 function execCurrentInstruction() {
-		// debugger;
-		 instr = program.execInstruction();
-		 switch (instr) {
-			case instruction.UP:
+		 instr = execInstruction(program);
+		 switch (instr.opCode) {
+			case Instruction.UP:
 				moveUp();
 				break;
-			case instruction.DOWN:
+			case Instruction.DOWN:
 				moveDown();
 				break;
-			case instruction.LEFT:
+			case Instruction.LEFT:
 				moveLeft();
 				break;
-			case instruction.RIGHT:
+			case Instruction.RIGHT:
 				moveRight();
 				break;
-			case instruction.STOP:
+			case Instruction.STOP:
 				stopProgram();
 				break;
 			default:
@@ -359,12 +361,12 @@
     
 	function displayProgram() {
 		$(".programListing ol li").remove();
-		for (var loc = 0; loc < program.programSize(); loc++) {
-			instr = program.getProgramInstruction(loc);
-			console.log("loc: " + loc + "  " + instruction.getDescrisption(instr) );
-			$(".programListing ol").append("<li>" + instruction.getDescrisption(instr));
+		for (var loc = 0; loc < programSize(program); loc++) {
+			instr = getProgramInstruction(program, loc);
+			console.log("loc: " + loc + "  " + getDescrisption(instr) );
+			$(".programListing ol").append("<li>" + getDescrisption(instr));
 		}
-		$(".programListing ol li").eq(program.getProgramCounter()).addClass("currentInstruction");
+		$(".programListing ol li").eq(getProgramCounter(program)).addClass("currentInstruction");
 	} 
 	
     function keyDownHandler(e) {
@@ -393,8 +395,11 @@
     
     function moveDown(){
     	if (recordInput === true) {
-    		program.addInstruction(instruction.DOWN);
-    		displayProgram();
+            obj = new Object;
+            obj.opCode = Instruction.DOWN;
+            obj.repetitionCount = 1;
+            addInstruction(program, obj);
+            displayProgram();
     	} 
         else if (currentY < gridHeight-1){
             if (grid[currentY+1][currentX]===FBOX && robotHasFood){ //if it's on the food box..
@@ -407,11 +412,7 @@
              }            
              else if (grid[currentY+1][currentX]===OPEN){
 					clearPreviousRobotImage();
-					currentY++;
-             		if (programRunning === false && recordInput === true) {
-             			program.addInstruction(instruction.DOWN);
-             		}
-             		displayProgram();
+					currentY++;;
              		drawRobotDown();
              		console.log("current x is " + currentX + " current y is " + currentY);
                 }
@@ -421,9 +422,6 @@
                   currentY++;
                   gContext.drawImage(dirtImage,currentX*CELL_SIZE, currentY*CELL_SIZE);
                   grid[currentY][currentX]= O; //remove wheat from grid!!! set to empty
-             		if (programRunning === false && recordInput === true) {
-             			program.addInstruction(instruction.DOWN);
-             		}
              		displayProgram();
              		drawRobotDown();
              		console.log("current x is " + currentX + " current y is " + currentY);
@@ -431,11 +429,6 @@
               else if (grid[currentY+1][currentX]===PILEOFFOOD && robotHasFood == false){
                   robotHasFood= true;
                   clearPreviousRobotImage();
-                  
-             		if (programRunning === false && recordInput === true) {
-             			program.addInstruction(instruction.DOWN);
-             		}
-             		displayProgram();
              		drawRobotDown();
              		console.log("current x is " + currentX + " current y is " + currentY);
       			}
@@ -451,7 +444,10 @@
     }    
     function moveUp(){
     	if (recordInput === true) {
-    		program.addInstruction(instruction.UP);
+            obj = new Object;
+            obj.opCode = Instruction.UP;
+            obj.repetitionCount = 1;
+            addInstruction(program, obj);
     		displayProgram();
     	}
     	else if (currentY > 0){
@@ -467,10 +463,6 @@
            else if (grid[currentY-1][currentX]===OPEN){ //if spot above is open..
                clearPreviousRobotImage();
                currentY--;
-               if (programRunning === false && recordInput === true) {
-               		program.addInstruction(instruction.UP);
-               }
-               displayProgram();
                drawRobotUp();
                console.log("current x is " + currentX + " current y is " + currentY);
            }
@@ -480,20 +472,12 @@
                   currentY--;
                   gContext.drawImage(dirtImage,currentX*CELL_SIZE, currentY*CELL_SIZE);
                   grid[currentY][currentX]= O; //remove wheat from grid!!! set to empty
-             		if (programRunning === false && recordInput === true) {
-             			program.addInstruction(instruction.UP);
-             		}
-             		displayProgram();
              		drawRobotUp();
              		console.log("current x is " + currentX + " current y is " + currentY);
       			}
             else if (grid[currentY-1][currentX]===PILEOFFOOD && robotHasFood == false){
                   robotHasFood= true;
                   clearPreviousRobotImage();
-             		if (programRunning === false && recordInput === true) {
-             			program.addInstruction(instruction.UP);
-             		}
-             		displayProgram();
              		drawRobotUp();
              		console.log("current x is " + currentX + " current y is " + currentY);
       			}
@@ -508,7 +492,10 @@
     }
     function moveRight(){
     	if (recordInput === true) {
-    		program.addInstruction(instruction.RIGHT);
+            obj = new Object;
+            obj.opCode = Instruction.RIGHT;
+            obj.repetitionCount = 1;
+            addInstruction(program, obj);
     		displayProgram();
     	} else
         if (currentX < gridWidth-1){
@@ -525,10 +512,6 @@
             else if (grid[currentY][currentX+1]===OPEN){
                  clearPreviousRobotImage();
                  currentX++;
-                 if (programRunning === false && recordInput === true) {
-                 	program.addInstruction(instruction.RIGHT);
-                 }
-                 displayProgram();
                  drawRobotRight();
                  console.log("current x is " + currentX);
                  console.log("current y is " + currentY);
@@ -539,20 +522,12 @@
                   currentX++;
                   gContext.drawImage(dirtImage,currentX*CELL_SIZE, currentY*CELL_SIZE);
                   grid[currentY][currentX]= O; //remove wheat from grid!!! set to empty
-             		if (programRunning === false && recordInput === true) {
-             			program.addInstruction(instruction.RIGHT);
-             		}
-             		displayProgram();
              		drawRobotRight();
              		console.log("current x is " + currentX + " current y is " + currentY);
       			}
             else if (grid[currentY][currentX+1]===PILEOFFOOD && robotHasFood == false){
                   robotHasFood= true;
                   clearPreviousRobotImage();
-             		if (programRunning === false && recordInput === true) {
-             			program.addInstruction(instruction.RIGHT);
-             		}
-             		displayProgram();
              		drawRobotRight();
              		console.log("current x is " + currentX + " current y is " + currentY);
       			}
@@ -566,8 +541,11 @@
     }    
     function moveLeft(){
     	if (recordInput === true) {
-    		program.addInstruction(instruction.LEFT);
-    		displayProgram();/////////////////////////////////////
+            obj = new Object;
+            obj.opCode = Instruction.LEFT;
+            obj.repetitionCount = 1;
+            addInstruction(program, obj);
+    		displayProgram();
     	} else if (currentX > 0){
             
             if (grid[currentY][currentX-1]===FBOX && robotHasFood){ //if it's on the food box..
@@ -582,10 +560,6 @@
          else if (grid[currentY][currentX-1]===OPEN){ //if spot to left is open..
              clearPreviousRobotImage();
              currentX--;
-             if (programRunning === false && recordInput === true) {
-             	program.addInstruction(instruction.LEFT);
-             }
-             displayProgram();
              drawRobotLeft();
                console.log("current x is " + currentX);
                  console.log("current y is " + currentY);
@@ -596,20 +570,14 @@
                   currentX--;
                   gContext.drawImage(dirtImage,currentX*CELL_SIZE, currentY*CELL_SIZE);
                   grid[currentY][currentX]= O; //remove wheat from grid!!! set to empty
-             		if (programRunning === false && recordInput === true) {
-             			program.addInstruction(instruction.LEFT);
-             		}
-             		displayProgram();
+
+
              		drawRobotLeft();
              		console.log("current x is " + currentX + " current y is " + currentY);
       			}    
             else if (grid[currentY][currentX-1]===PILEOFFOOD && robotHasFood == false){
                   robotHasFood= true;
-                  clearPreviousRobotImage();
-             		if (programRunning === false && recordInput === true) {
-             			program.addInstruction(instruction.LEFT);
-             		}
-             		displayProgram();
+                  clearPreviousRobotImage();;
              		drawRobotLeft();
              		console.log("current x is " + currentX + " current y is " + currentY);
       			}  
@@ -730,7 +698,7 @@
             // document.getElementById("ShadowColorSample").getContext('2d');
             gContext.fillStyle = 'green';
             document.addEventListener("keydown", keyDownHandler, false);
-            program.init();
+            init(program);
            // document.addEventListener("keyup", keyUpHandler, false);  	    
             drawGrid (ctrlRoom);
             grid= ctrlRoom;
@@ -773,14 +741,14 @@
                 programRunning = true;
                 $("div.controlPanel").find(".moveUp, .moveDown, .moveLeft, .moveRight, .runProgram").prop("disabled", true);
                 $("div.controlPanel").find(".stopProgram").prop("disabled", false);
-                program.restartProgram();
-                execNextProgramStep();
+                restartProgram(program);
+                execNextProgramStep(program);
             });
             $("div.controlPanel .stopProgram").on('click', function() {
                 stopProgram();
             });
             $("div.controlPanel .clearProgram").on('click', function() {
-                program.init();
+                init(program);
                 displayProgram();
             });
             $("div.controlPanel").find(".stopProgram").prop("disabled", true);
