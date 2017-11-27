@@ -21,6 +21,9 @@
 //		var G = VILLAGERGIRL = 5;
 //		var M = VILLAGERGUY = 6;
 //		var S = SUPERPISSEDOFFVILLAGERGUY = 7;
+
+		var program = new Program();
+
         
 	                // 0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 
 	     var grid = [[ W, W, W, W, W, W, W, W, W, O, W, W, W, W, W, W, W, W, W, W], //0
@@ -119,7 +122,10 @@
 //		 villagerGuy.src = "resources/images/villagerGuy.png";
 //		 var superPissedOffVillagerGuy = new Image(20,20);
 //		 superPissedOffVillagerGuy.src = "resources/images/pixelman.png";
-             
+
+    function displayTotalFood() {
+        $(".foodAmount").text(totalFood);
+	}
          
 	 $(document).ready(function(){
         canvas = document.getElementById("cellRoom");
@@ -129,10 +135,10 @@
     	// document.getElementById("ShadowColorSample").getContext('2d');
     	gContext.fillStyle = 'green';
         document.addEventListener("keydown", keyDownHandler, false);
-        program.init();
+        init(program);
        // document.addEventListener("keyup", keyUpHandler, false);  	    
-	    drawGrid (ctrlRoom);
-        grid= ctrlRoom;
+	    drawGrid(ctrlRoom);
+        grid = ctrlRoom;
         drawRobotDown(); //draw robot for the first time
 		
 		$("div.controlPanel .moveUp").on('click', function() {
@@ -165,28 +171,28 @@
 			
 			$("div.controlPanel").find(".moveUp, .moveDown, .moveLeft, .moveRight, .runProgram").prop("disabled", true);
 			$("div.controlPanel").find(".stopProgram").prop("disabled", false);
-			program.restartProgram();
-			execNextProgramStep();
+			restartProgram(program);
+			execNextProgramStep(program);
 		});
 		$("div.controlPanel .stopProgram").on('click', function() {
 			stopProgam();
 		});
 		$("div.controlPanel .clearProgram").on('click', function() {
-			program.init();
-			displayProgram();
+			init(program);
+			displayProgram(program);
 		});
 		$("div.controlPanel").find(".stopProgram").prop("disabled", true);
 		$("div.controlPanel").find(".stopRecord").prop("disabled", true);
-		$(".foodAmount").text(initFoodAmount);
+		$(".foodAmount").text(initialFoodAmount);
 	});
 	 
-	 function execNextProgramStep() {
+	 function execNextProgramStep(program) {
 		 if (programRunning) {
-		 	setTimeout(function() { execNextProgramStep(); }, 1000);
-		 	var pc = program.getProgramCounter();
+		 	setTimeout(function() { execNextProgramStep(program); }, 1000);
+		 	var pc = getProgramCounter(program);
 		 	$(".programListing ol li").eq(pc - 1).removeClass("currentInstruction");
 		 	$(".programListing ol li").eq(pc).addClass("currentInstruction");
-		 	execCurrentInstruction();
+		 	execCurrentInstruction(program);
 		 }
 	 }
 	 function stopProgram() {
@@ -195,23 +201,22 @@
 			$("div.controlPanel").find(".stopProgram").prop("disabled", true);
 			$(".programListing ol li").removeClass("currentInstruction");
 	 }
-	 function execCurrentInstruction() {
-		// debugger;
-		 instr = program.execInstruction();
-		 switch (instr) {
-			case instruction.UP:
+	 function execCurrentInstruction(program) {
+		 instr = execInstruction(program);
+		 switch (instr.opCode) {
+			case Instruction.UP:
 				moveUp();
 				break;
-			case instruction.DOWN:
+			case Instruction.DOWN:
 				moveDown();
 				break;
-			case instruction.LEFT:
+			case Instruction.LEFT:
 				moveLeft();
 				break;
-			case instruction.RIGHT:
+			case Instruction.RIGHT:
 				moveRight();
 				break;
-			case instruction.STOP:
+			case Instruction.STOP:
 				stopProgram();
 				break;
 			default:
@@ -283,12 +288,12 @@
     
 	function displayProgram() {
 		$(".programListing ol li").remove();
-		for (var loc = 0; loc < program.programSize(); loc++) {
-			instr = program.getProgramInstruction(loc);
-			console.log("loc: " + loc + "  " + instruction.getDescrisption(instr) );
-			$(".programListing ol").append("<li>" + instruction.getDescrisption(instr));
+		for (var loc = 0; loc < programSize(program); loc++) {
+			instr = getProgramInstruction(program, loc);
+			console.log("loc: " + loc + "  " + getDescrisption(instr) );
+			$(".programListing ol").append("<li>" + getDescrisption(instr));
 		}
-		$(".programListing ol li").eq(program.getProgramCounter()).addClass("currentInstruction");
+		$(".programListing ol li").eq(getProgramCounter(program)).addClass("currentInstruction");
 	} 
 	
     function keyDownHandler(e) {
@@ -313,55 +318,60 @@
     
     function moveDown(){
     	if (recordInput === true) {
-    		program.addInstruction(instruction.DOWN);
+    	    obj = new Object;
+    	    obj.opCode = Instruction.DOWN;
+    	    obj.repetitionCount = 1;
+            addInstruction(program, obj);
     		displayProgram();
     	} 
         else if (currentY < gridHeight-1){
             if (grid[currentY+1][currentX]===FBOX){ //if it's on the food box..
                 console.log("yum i dumped food off!");
              robotHasFood= false; //dump food into bin
-             foodAmount++;
-             updateFood();
+             totalFood++;
+             displayTotalFood();
              }
              else if (grid[currentY+1][currentX]===OPEN){
 					clearPreviousRobotImage();
 					currentY++;
              		if (programRunning === false && recordInput === true) {
-             			program.addInstruction(instruction.DOWN);
+             			addInstruction(program, Instruction.DOWN);
              		}
              		displayProgram();
              		drawRobotDown();
              		console.log("current x is " + currentX + " current y is " + currentY);
                 }
-		      else if (grid[currentY+1][currentX]===FOOD && robotHasFood == false){
-                  robotHasFood= true;
-              
-                  clearPreviousRobotImage();
-                  currentY++;
-              
-                  gContext.drawImage(dirtImage,currentX*CELL_SIZE, currentY*CELL_SIZE);
-                  grid[currentY][currentX]= O; //remove wheat from grid!!! set to empty
-             			
-             		if (programRunning === false && recordInput === true) {
-             			program.addInstruction(instruction.DOWN);
-             		}
-             		displayProgram();
-             		drawRobotDown();
-             		console.log("current x is " + currentX + " current y is " + currentY);
-      			}
-            
+		      else if (grid[currentY+1][currentX]===FOOD && robotHasFood == false) {
+                robotHasFood = true;
+
+                clearPreviousRobotImage();
+                currentY++;
+
+                gContext.drawImage(dirtImage, currentX * CELL_SIZE, currentY * CELL_SIZE);
+                grid[currentY][currentX] = O; //remove wheat from grid!!! set to empty
+
+                if (programRunning === false && recordInput === true) {
+                    addInstruction(program, Instruction.DOWN);
+                }
+                displayProgram();
+                drawRobotDown();
+                console.log("current x is " + currentX + " current y is " + currentY);
             }
-      		else if(currentX == 9 && currentY == 19){ //if exiting down...
-                loadGridDown();
-                console.log("I'm in the right square to exit down!");
-      		}
+		}
+      	else if(currentX == 9 && currentY == 19){ //if exiting down...
+			loadGridDown();
+        	console.log("I'm in the right square to exit down!");
+      	}
     	
            
         
     }    
     function moveUp(){
     	if (recordInput === true) {
-    		program.addInstruction(instruction.UP);
+            obj = new Object;
+            obj.opCode = Instruction.UP;
+            obj.repetitionCount = 1;
+            addInstruction(program, obj);
     		displayProgram();
     	}
     	else if (currentY > 0){
@@ -369,9 +379,6 @@
                gContext.clearRect(currentX*CELL_SIZE,currentY*CELL_SIZE, CELL_SIZE, CELL_SIZE);
                gContext.drawImage(dirtImage,currentX*CELL_SIZE, currentY*CELL_SIZE);
                currentY--;
-               if (programRunning === false && recordInput === true) {
-               		program.addInstruction(instruction.UP);
-               }
                displayProgram();
                drawRobotUp();
                console.log("current x is " + currentX + " current y is " + currentY);
@@ -384,7 +391,10 @@
     }
     function moveRight(){
     	if (recordInput === true) {
-    		program.addInstruction(instruction.RIGHT);
+            obj = new Object;
+            obj.opCode = Instruction.RIGHT;
+            obj.repetitionCount = 1;
+            addInstruction(program, obj);
     		displayProgram();
     	} else
         if (currentX < gridWidth-1){
@@ -393,7 +403,7 @@
                  gContext.drawImage(dirtImage,currentX*CELL_SIZE, currentY*CELL_SIZE);
                  currentX++;
                  if (programRunning === false && recordInput === true) {
-                 	program.addInstruction(instruction.RIGHT);
+                 	addInstruction(program, Instruction.RIGHT);
                  }
                  displayProgram();
                  drawRobotRight();
@@ -408,7 +418,10 @@
     }    
     function moveLeft(){
     	if (recordInput === true) {
-    		program.addInstruction(instruction.LEFT);
+            obj = new Object;
+            obj.opCode = Instruction.LEFT;
+            obj.repetitionCount = 1;
+            addInstruction(program, obj);
     		displayProgram();
     	} else if (currentX > 0){
            if (grid[currentY][currentX-1]===OPEN){ //if spot to left is open..
@@ -416,7 +429,7 @@
              gContext.drawImage(dirtImage,currentX*CELL_SIZE, currentY*CELL_SIZE);
              currentX--;
              if (programRunning === false && recordInput === true) {
-             	program.addInstruction(instruction.LEFT);
+             	addInstruction(program, Instruction.LEFT);
              }
              displayProgram();
              drawRobotLeft();
