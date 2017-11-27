@@ -1,0 +1,16 @@
+/** { margin: 0; padding: 0; box-sizing: border-box; }*/
+/*body { font: 13px Helvetica, Arial; }*/
+.chatbox {width:33%; display: inline-block; position: fixed; right: 0;}
+#chatform, #userNickname { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+.chatbox form input { border: 0; padding: 10px; width: 26%; margin-right: .5%; }
+.chatbox form button { width: 5%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+#name { border: 0; padding: 10px; width: 26%; margin-right: .5%; }
+#userNickname button { width: 5%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+.titleBar { background: #000; padding: 13px 0px; overflow-y: hidden; }
+#chatOpen { background-color: forestgreen; position: fixed; border: none; right: 0; height: 50.5px; font-size: 16pt; display: none; }
+#chatClose { background-color: forestgreen; position: relative; border: none; left: 0; height: 50.5px; margin-top: -13px; font-size: 16pt; }
+.chatTitle { color: white; font-size: 16pt; margin-left: 10px; }
+.chatLog { overflow-y: scroll; overflow-x: hidden; height: 85vh; }
+#messages { list-style-type: none; margin: 0; padding: 0;}
+#messages li { padding: 5px 10px; }
+#messages li:nth-child(odd) { background: #eee; }

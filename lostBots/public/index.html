@@ -1,9 +1,11 @@
 <html>
 <head>
+<link rel="stylesheet" href="./resources/css/chatbox.css">
 <link rel="stylesheet" href="resources/css/amazingBots.css">
 <script src="resources/js/jquery-3.2.1.js"></script>
 <script src="resources/js/rooms.js"></script>   
 <script src="resources/js/program.js"></script>
+    
 <style>
 .programListing {
     background: black;
@@ -12,12 +14,12 @@
 </style>
 <script type="text/javascript">    
     
-    window.onload = function() { //this reloads the page, this is a bandaid
-    if(!window.location.hash) {
-        window.location = window.location + '#loaded';
-        window.location.reload();
-    }
-} 
+//    window.onload = function() { //this reloads the page, this is a bandaid
+//    if(!window.location.hash) {
+//        window.location = window.location + '#loaded';
+//        window.location.reload();
+//        }
+//    } 
     
 	//   var context = document.getElementById("ShadowColorSample").getContext('2d');
         var O = OPEN = 0;
@@ -178,72 +180,48 @@
          var rightSideFoodPile= new Image(20,20);
 		 rightSideFoodPile.src = "resources/images/foodTiles/rightSideFoodTile.png"; 
     
-	 $(document).ready(function(){
-        canvas = document.getElementById("cellRoom");
-        gContext = canvas.getContext('2d');  // setup graphic context
-       
-        totalFood = initialFoodAmount;
-        displayTotalFood();
-    	// document.getElementById("ShadowColorSample").getContext('2d');
-    	gContext.fillStyle = 'green';
-        document.addEventListener("keydown", keyDownHandler, false);
-        program.init();
-       // document.addEventListener("keyup", keyUpHandler, false);  	    
-	    drawGrid (ctrlRoom);
-        grid= ctrlRoom;
-        drawRobotDown(); //draw robot for the first time
-		
-		$("div.controlPanel .moveUp").on('click', function() {
-			moveUp();
-		} );
-		$("div.controlPanel .moveDown").on('click', function() {
-			moveDown();
-		} );
-		$("div.controlPanel .moveLeft").on('click', function() {
-			moveLeft();
-		} );
-		$("div.controlPanel .moveRight").on('click', function() {
-			moveRight();
-		} );
-         $("div.controlPanel .loopProgram").on('click', function() {
-			if (!infiniteLoop){
-             infiniteLoop= true;
+    //Added this function to keep track of the number of images currently loaded. Without this the DOM will load with partially drawn canvas.
+     var numImagesLoaded = 0;
+     function imagesInit(image){
+         image.onload = function(){
+            console.log(image+"was loaded.");
+            numImagesLoaded++;
+            if(numImagesLoaded >= 26){
+                console.log("All images loaded!");
+                drawGrid (ctrlRoom);
+                grid= ctrlRoom;
+                drawRobotDown(); //draw robot for the first time
             }
-             else{
-             infiniteLoop= false;
-             }
-		} );
-		$("div.controlPanel .startRecord").on('click', function() {
-			recordInput = true;
-			$("div.controlPanel").find(".stopRecord").prop("disabled", false);
-			$("div.controlPanel").find(".startRecord").prop("disabled", true);
-			$("div.controlPanel .runProgram").prop("disabled", true);
-		});
-		$("div.controlPanel .stopRecord").on('click', function() {
-			recordInput = false;
-			$("div.controlPanel").find(".stopRecord").prop("disabled", true);
-			$("div.controlPanel").find(".startRecord").prop("disabled", false);
-			$("div.controlPanel .runProgram").prop("disabled", false);
-		});
-		
-		$("div.controlPanel .runProgram").on('click', function() {
-            programRunning = true;
-			$("div.controlPanel").find(".moveUp, .moveDown, .moveLeft, .moveRight, .runProgram").prop("disabled", true);
-			$("div.controlPanel").find(".stopProgram").prop("disabled", false);
-            program.restartProgram();
-		    execNextProgramStep();
-		});
-		$("div.controlPanel .stopProgram").on('click', function() {
-			stopProgram();
-		});
-		$("div.controlPanel .clearProgram").on('click', function() {
-			program.init();
-			displayProgram();
-		});
-		$("div.controlPanel").find(".stopProgram").prop("disabled", true);
-		$("div.controlPanel").find(".stopRecord").prop("disabled", true);
-	});
-	 
+         }
+     }
+    
+    imagesInit(dirtImage);
+    imagesInit(stoneImage);
+    imagesInit(plainWallImage);
+    imagesInit(foodBarrelImage);
+    imagesInit(robotDown);
+    imagesInit(robotDownFood);
+    imagesInit(robotUp);
+    imagesInit(robotUpFood);
+    imagesInit(robotLeft);
+    imagesInit(robotLeftFood);
+    imagesInit(robotRight);
+    imagesInit(robotRightFood);
+    imagesInit(foodBoxImage);
+    imagesInit(heisenberg);
+    imagesInit(villagerGirl);
+    imagesInit(villagerGuy);
+    imagesInit(superPissedOffVillagerGuy);
+    imagesInit(topLeftFoodPile);
+    imagesInit(topCenterFoodPile);
+    imagesInit(topRightFoodPile);
+    imagesInit(leftSideFoodPile);
+    imagesInit(centerTileFoodPile);
+    imagesInit(rightSideFoodPile);
+    imagesInit(bottomLeftFoodPile);
+    imagesInit(bottomCenterFoodPile);
+    imagesInit(bottomRightFoodPile);
+    
 	 function execNextProgramStep() {
 		 if (programRunning) {
 		 	setTimeout(function() { execNextProgramStep(); }, 200);
@@ -743,12 +721,109 @@
 		$(".foodAmount").text(totalFood);
 	}
 	
-	$(document).ready(function() {
+     $(document).ready(function(){
+            canvas = document.getElementById("cellRoom");
+            gContext = canvas.getContext('2d');  // setup graphic context
 
+            totalFood = initialFoodAmount;
+            displayTotalFood();
+            // document.getElementById("ShadowColorSample").getContext('2d');
+            gContext.fillStyle = 'green';
+            document.addEventListener("keydown", keyDownHandler, false);
+            program.init();
+           // document.addEventListener("keyup", keyUpHandler, false);  	    
+            drawGrid (ctrlRoom);
+            grid= ctrlRoom;
+            drawRobotDown(); //draw robot for the first time
 
-	});
-	
+            $("div.controlPanel .moveUp").on('click', function() {
+                moveUp();
+            } );
+            $("div.controlPanel .moveDown").on('click', function() {
+                moveDown();
+            } );
+            $("div.controlPanel .moveLeft").on('click', function() {
+                moveLeft();
+            } );
+            $("div.controlPanel .moveRight").on('click', function() {
+                moveRight();
+            } );
+             $("div.controlPanel .loopProgram").on('click', function() {
+                if (!infiniteLoop){
+                 infiniteLoop= true;
+                }
+                 else{
+                 infiniteLoop= false;
+                 }
+            } );
+            $("div.controlPanel .startRecord").on('click', function() {
+                recordInput = true;
+                $("div.controlPanel").find(".stopRecord").prop("disabled", false);
+                $("div.controlPanel").find(".startRecord").prop("disabled", true);
+                $("div.controlPanel .runProgram").prop("disabled", true);
+            });
+            $("div.controlPanel .stopRecord").on('click', function() {
+                recordInput = false;
+                $("div.controlPanel").find(".stopRecord").prop("disabled", true);
+                $("div.controlPanel").find(".startRecord").prop("disabled", false);
+                $("div.controlPanel .runProgram").prop("disabled", false);
+            });
+
+            $("div.controlPanel .runProgram").on('click', function() {
+                programRunning = true;
+                $("div.controlPanel").find(".moveUp, .moveDown, .moveLeft, .moveRight, .runProgram").prop("disabled", true);
+                $("div.controlPanel").find(".stopProgram").prop("disabled", false);
+                program.restartProgram();
+                execNextProgramStep();
+            });
+            $("div.controlPanel .stopProgram").on('click', function() {
+                stopProgram();
+            });
+            $("div.controlPanel .clearProgram").on('click', function() {
+                program.init();
+                displayProgram();
+            });
+            $("div.controlPanel").find(".stopProgram").prop("disabled", true);
+            $("div.controlPanel").find(".stopRecord").prop("disabled", true);
+        });
 </script>
+    <!-- Chatbox Code -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="resources/js/jquery-ui.min.js"></script>
+    <script>
+        $(function () {
+            var socket = io();
+            
+            $('#chatClose').click(function(){
+                $('.chatBox').hide("slide", {direction: "right"}, function(){
+                    $('#chatOpen').show();
+                });
+            });
+            
+            $('#chatOpen').click(function(){
+                $('#chatOpen').hide("highlight", "fast", function(){
+                    $('.chatBox').show("slide", {direction: "right"});
+                });
+            });
+            
+            $('#chatform').submit(function(){
+                socket.emit('chat message', $('#m').val());
+                $('#m').val('');
+                return false;
+            });
+            $('chatform').hide();
+            
+            $('#userNickname').submit(function(){
+                socket.emit('add user', $('#name').val());
+                $('#userNickname').hide();
+                $('chatform').show();
+                return false;
+            })
+            socket.on('chat message', function(data){
+                $('#messages').append($('<li>').text(data.username +": " + data.message));
+            });
+  });
+    </script>
 </head>
 <body>
 	<div class="controlPanel">
@@ -772,8 +847,21 @@
 	</div>
 	<canvas id="cellRoom" class="cellRoom" width="400" height="400"
 		style="border: 1px solid">
-	   
-	   </canvas>
-
+    </canvas>
+    <div class="chatbox">
+        <div class="titleBar">
+            <button id="chatClose"> &#10148;</button><span class="chatTitle">Global Chat</span>
+        </div>
+        <div class="chatLog">
+            <ul id="messages"></ul>
+        </div>
+        <form  id="chatform" action="">
+            <input id="m" autocomplete="off" placeholder="Say something..."/><button>Send</button>
+        </form>
+        <form id="userNickname" action="">
+            <input id="name" type="text" maxlength="20" placeholder="Enter a nickname..."><button>Send</button>
+        </form>
+    </div>
+    <button id="chatOpen">&#8612;</button>
 </body>
 </html>
