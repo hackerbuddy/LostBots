@@ -1,3 +1,6 @@
+#main-game {
+    display: none;
+}
 
 .controlPanel {
 	width: 160px;
