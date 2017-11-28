@@ -5,6 +5,9 @@
 <script src="resources/js/jquery-3.2.1.js"></script>
 <script src="resources/js/rooms.js"></script>   
 <script src="resources/js/program.js"></script>
+<!--Phaser CDN-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/phaser-ce/2.9.2/phaser.js"></script>
+<script src="mainMenu/mainmenu.js"></script>
     
 <style>
 .programListing {
@@ -120,7 +123,7 @@
              this.currentTime = 0;
              this.play();
          }, false);
-         soundTrack.play();
+//         soundTrack.play();
          
          var dirtImage = new Image(20, 20);
          dirtImage.src = "resources/images/dirt.png";
@@ -794,28 +797,30 @@
     </script>
 </head>
 <body>
-	<div class="controlPanel">
-		<button class="moveUp">UP</button> <br />
-		<button class="moveDown">DOWN</button> <br />
-		<button class="moveLeft">LEFT</button> <br />
-		<button class="moveRight">RIGHT</button> <br />
-        <button class="loopProgram"> LOOP</button> <br />
-		<button class="startRecord">RECORD PROGRAM</button> <br />
-		<button class="stopRecord">STOP RECORD</button> <br />
-		<button class="runProgram">RUN PROGRAM</button> <br />
-		<button class="stopProgram">STOP PROGRAM</button> <br />
-		<button class="clearProgram">CLEAR PROGRAM</button> <br />
-		<span class="foodTotal">Food: <span class="foodAmount"></span></span>
-	</div>
-	<div class="programListing">
-	    <ol>
-	       <!--  <li> LEFT  -->
-	       <!--  <li> DOWN  -->
-	    </ol>
-	</div>
-	<canvas id="cellRoom" class="cellRoom" width="400" height="400"
-		style="border: 1px solid">
-    </canvas>
+    <div id="main-game">
+        <div class="controlPanel">
+            <button class="moveUp">UP</button> <br />
+            <button class="moveDown">DOWN</button> <br />
+            <button class="moveLeft">LEFT</button> <br />
+            <button class="moveRight">RIGHT</button> <br />
+            <button class="loopProgram"> LOOP</button> <br />
+            <button class="startRecord">RECORD PROGRAM</button> <br />
+            <button class="stopRecord">STOP RECORD</button> <br />
+            <button class="runProgram">RUN PROGRAM</button> <br />
+            <button class="stopProgram">STOP PROGRAM</button> <br />
+            <button class="clearProgram">CLEAR PROGRAM</button> <br />
+            <span class="foodTotal">Food: <span class="foodAmount"></span></span>
+        </div>
+        <div class="programListing">
+            <ol>
+               <!--  <li> LEFT  -->
+               <!--  <li> DOWN  -->
+            </ol>
+        </div>
+        <canvas id="cellRoom" class="cellRoom" width="400" height="400"
+            style="border: 1px solid">
+        </canvas>
+    </div>
     <div class="chatbox">
         <div class="titleBar">
             <button id="chatClose"> &#10148;</button><span class="chatTitle">Global Chat</span>
