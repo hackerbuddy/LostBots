@@ -1,0 +1,510 @@
+<html>
+<head>
+<link rel="stylesheet" href="resources/css/amazingBots.css">
+<script src="resources/js/jquery-3.2.1.js"></script>
+<script src="resources/js/rooms.js"></script>   
+<script src="resources/js/program.js"></script>
+<style>
+.programListing {
+    background: black;
+    color: green;
+}
+</style>
+<script type="text/javascript">    
+    
+	//   var context = document.getElementById("ShadowColorSample").getContext('2d');
+        var O = OPEN = 0;
+		var W = WALL = 1;
+		var F = FOOD = 2;
+//		var H = HEISENBERG = 4;
+//		var G = VILLAGERGIRL = 5;
+//		var M = VILLAGERGUY = 6;
+//		var S = SUPERPISSEDOFFVILLAGERGUY = 7;
+        
+	                // 0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 
+	     var grid = [[ W, W, W, W, W, W, W, W, W, O, W, W, W, W, W, W, W, W, W, W], //0
+	    	         [ W, F, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, W],// 1
+	    	         [ W, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, W],
+	    	         [ W, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, O, O, O, W],
+	    	         [ W, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, O, O, O, W],
+	    	         [ W, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, W],
+	    	         [ W, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, O, O, O, W],
+                     [ W, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, O, O, O, W],
+                     [ W, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, O, O, O, W],
+                     [ O, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, O, O, O, O],
+                     [ W, O, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, O, O, W],
+                     [ W, O, O, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, O, W],
+                     [ W, O, O, O, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, W],
+                     [ W, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, W],
+                     [ W, O, O, O, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, W],
+                     [ W, O, O, O, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, W],
+                     [ W, O, O, O, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, W],
+                     [ W, O, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, O, O, W],
+                     [ W, O, O, O, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, W],
+                     [ W, W, W, W, W, W, W, W, W, O, W, W, W, W, W, W, W, W, W, W]
+	                ];
+                    // 0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 
+     var ctrlRoom = [[ W, W, W, W, W, W, W, W, W, O, W, W, W, W, W, W, W, W, W, W], //0
+	    	         [ W, F, O, O, O, O, O, O, O, O, O, O, O, O, O, O, F, F, F, W],// 1
+	    	         [ W, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, F, W, F, W],
+	    	         [ W, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, F, F, F, W],
+	    	         [ W, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, O, O, O, W],
+	    	         [ W, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, W],
+	    	         [ W, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, O, O, O, W],
+                     [ W, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, O, O, O, W],
+                     [ W, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, O, O, O, W],
+                     [ O, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, O, O, O, O],
+                     [ W, O, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, O, O, W],
+                     [ W, O, O, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, O, W],
+                     [ W, O, O, O, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, W],
+                     [ W, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, W],
+                     [ W, O, O, O, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, W],
+                     [ W, O, O, O, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, W],
+                     [ W, O, O, O, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, W],
+                     [ W, O, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, O, O, W],
+                     [ W, O, O, O, O, O, O, O, O, O, O, O, W, O, O, O, O, O, O, W],
+                     [ W, W, W, W, W, W, W, W, W, O, W, W, W, W, W, W, W, W, W, W]
+	                ];
+    
+         var currentRoomX= 1;
+         var currentRoomY= 1;
+         var currentRoom= ctrlRoom;
+    
+                    //   0       1      2 
+	     var map=   [[ maze6, maze7, maze8], //0
+                     [ maze5, ctrlRoom, maze1],// 1
+                     [ maze4, maze3, maze2] // 2
+	                ];
+    
+         var currentX= 4; //0 based
+         var currentY= 4;
+         var gridWidth= 20;
+         var gridHeight= 20;
+         
+         var CELL_SIZE = 20; 
+    	 var programRunning = false;
+    	 var recordInput = false;
+    	 var canvas;
+    	 var gContext;
+        
+         var dirtImage = new Image(20, 20);
+         dirtImage.src = "resources/images/dirt.png";
+         var stoneImage= new Image(20, 20);
+         stoneImage.src = "resources/images/stoneTile.png";
+         var plainWallImage= new Image(20,20);
+         plainWallImage.src= "resources/images/plainGreyWall.png";
+         var foodBarrelImage = new Image(20, 20);
+         foodBarrelImage.src= "resources/images/foodBarrel.gif";
+		 var robotDown = new Image(20,20);
+		 robotDown.src = "resources/images/down.png";
+		 var robotUp = new Image(20,20);
+		 robotUp.src = "resources/images/up.png";
+		 var robotLeft = new Image(20,20);
+		 robotLeft.src = "resources/images/left.png";
+		 var robotRight = new Image(20,20);
+		 robotRight.src = "resources/images/right.png";
+		 
+		 var heisenberg = new Image(20,20);
+		 heisenberg.src = "resources/images/H.png";
+//		 var heisenberg = new Image(40,40);
+//		 heisenberg.src = "resources/images/H.png";
+//		 var villagerGirl = new Image(20,20);
+//		 villagerGirl.src = "resources/images/pixelgirl.png";
+//		 var villagerGuy = new Image(20,20);
+//		 villagerGuy.src = "resources/images/villagerGuy.png";
+//		 var superPissedOffVillagerGuy = new Image(20,20);
+//		 superPissedOffVillagerGuy.src = "resources/images/pixelman.png";
+             
+         
+	 $(document).ready(function(){
+        canvas = document.getElementById("cellRoom");
+        gContext = canvas.getContext('2d');  // setup graphic context
+       
+         
+    	// document.getElementById("ShadowColorSample").getContext('2d');
+    	gContext.fillStyle = 'green';
+        document.addEventListener("keydown", keyDownHandler, false);
+        program.init();
+       // document.addEventListener("keyup", keyUpHandler, false);  	    
+	    drawGrid (ctrlRoom);
+        grid= ctrlRoom;
+        drawRobotDown(); //draw robot for the first time
+		
+		$("div.controlPanel .moveUp").on('click', function() {
+			moveUp();
+		} );
+		$("div.controlPanel .moveDown").on('click', function() {
+			moveDown();
+		} );
+		$("div.controlPanel .moveLeft").on('click', function() {
+			moveLeft();
+		} );
+		$("div.controlPanel .moveRight").on('click', function() {
+			moveRight();
+		} );
+		$("div.controlPanel .startRecord").on('click', function() {
+			recordInput = true;
+			$("div.controlPanel").find(".stopRecord").prop("disabled", false);
+			$("div.controlPanel").find(".startRecord").prop("disabled", true);
+			$("div.controlPanel .runProgram").prop("disabled", true);
+		});
+		$("div.controlPanel .stopRecord").on('click', function() {
+			recordInput = false;
+			$("div.controlPanel").find(".stopRecord").prop("disabled", true);
+			$("div.controlPanel").find(".startRecord").prop("disabled", false);
+			$("div.controlPanel .runProgram").prop("disabled", false);
+		});
+		
+		$("div.controlPanel .runProgram").on('click', function() {
+			programRunning = true;
+			
+			$("div.controlPanel").find(".moveUp, .moveDown, .moveLeft, .moveRight, .runProgram").prop("disabled", true);
+			$("div.controlPanel").find(".stopProgram").prop("disabled", false);
+			program.restartProgram();
+			execNextProgramStep();
+		});
+		$("div.controlPanel .stopProgram").on('click', function() {
+			stopProgam();
+		});
+		$("div.controlPanel .clearProgram").on('click', function() {
+			program.init();
+			displayProgram();
+		});
+		$("div.controlPanel").find(".stopProgram").prop("disabled", true);
+		$("div.controlPanel").find(".stopRecord").prop("disabled", true);
+	});
+	 
+	 function execNextProgramStep() {
+		 if (programRunning) {
+		 	setTimeout(function() { execNextProgramStep(); }, 1000);
+		 	var pc = program.getProgramCounter();
+		 	$(".programListing ol li").eq(pc - 1).removeClass("currentInstruction");
+		 	$(".programListing ol li").eq(pc).addClass("currentInstruction");
+		 	execCurrentInstruction();
+		 }
+	 }
+	 function stopProgram() {
+			programRunning = false;
+			$("div.controlPanel").find(".moveUp, .moveDown, .moveLeft, .moveRight, .runProgram").prop("disabled", false);
+			$("div.controlPanel").find(".stopProgram").prop("disabled", true);
+			$(".programListing ol li").removeClass("currentInstruction");
+	 }
+	 function execCurrentInstruction() {
+		// debugger;
+		 instr = program.execInstruction();
+		 switch (instr) {
+			case instruction.UP:
+				moveUp();
+				break;
+			case instruction.DOWN:
+				moveDown();
+				break;
+			case instruction.LEFT:
+				moveLeft();
+				break;
+			case instruction.RIGHT:
+				moveRight();
+				break;
+			case instruction.STOP:
+				stopProgram();
+				break;
+			default:
+				str = "OTHER";
+			    break;
+		}
+	 }
+     function drawGrid(grid) {
+         console.log("new grid is " + grid.length + " height, width " + grid[0].length)
+	    	for (i = 0; i < grid.length; i++) {
+	    		for ( j = 0; j < grid[i].length; j++) {
+	    			
+	    		    if (grid[i][j] == WALL) {
+	    				gContext.drawImage(plainWallImage, j * CELL_SIZE, i * CELL_SIZE);
+	    		    } else if (grid[i][j] == FOOD) {
+	    		    	gContext.drawImage(foodBarrelImage, j * CELL_SIZE, i * CELL_SIZE);	
+					}
+                    else{
+                        gContext.drawImage(dirtImage, j * CELL_SIZE, i * CELL_SIZE); 
+                    }
+						
+//						else if(grid[i][j] == HEISENBERG){
+//							
+//							gContext.drawImage(dirtImage, j * CELL_SIZE, i * CELL_SIZE); 
+//							gContext.drawImage(heisenberg,j * CELL_SIZE, i * CELL_SIZE);
+//						}
+						
+//						else if(grid[i][j] == VILLAGERGIRL){
+//							
+//							gContext.drawImage(dirtImage);
+//							gContext.drawImage(villagerGirl,currentX*CELL_SIZE,currentY*CELL_SIZE);
+//						}
+//						else if(grid[i][j] == VILLAGERGUY){
+//							
+//							gContext.drawImage(dirtImage);
+//							gContext.drawImage(villagerGuy,currentX*CELL_SIZE,currentY*CELL_SIZE);
+//							
+//						}
+						
+//						else if(grid[i][j] == SUPERPISSEDOFFVILLAGERGUY){
+//							
+//							gContext.drawImage(dirtImage);
+//							gContext.drawImage(superPissedOffVillagerGuy,currentX*CELL_SIZE,currentY*CELL_SIZE);
+							
+//						}	
+	    		    
+                    
+		      }
+				
+//				else if(grid[i][j]==HEISENBERG){
+//					
+//					grid[3][3]=H;
+//					grid[3][4]=H;
+//					grid[4][3]=H;
+//					grid[4][4]=H;
+//				}
+                
+	      }
+     }
+    
+	function displayProgram() {
+		$(".programListing ol li").remove();
+		for (var loc = 0; loc < program.programSize(); loc++) {
+			instr = program.getProgramInstruction(loc);
+			console.log("loc: " + loc + "  " + instruction.getDescrisption(instr) );
+			$(".programListing ol").append("<li>" + instruction.getDescrisption(instr));
+		}
+		$(".programListing ol li").eq(program.getProgramCounter()).addClass("currentInstruction");
+	} 
+	
+    function keyDownHandler(e) {
+    if(e.keyCode == 39) {
+        moveRight();       
+    }
+    else if(e.keyCode == 37 ) {
+        moveLeft();
+    }
+    else if(e.keyCode == 38) {
+        moveUp();
+    }
+    else if(e.keyCode == 40) {
+        moveDown();
+    }
+    }    
+    function moveDown(){
+    	if (recordInput === true) {
+    		program.addInstruction(instruction.DOWN);
+    		displayProgram();
+    	} else {
+    		if (currentY < gridHeight-1){
+        		if (grid[currentY+1][currentX]===OPEN){
+					gContext.clearRect(currentX*CELL_SIZE,currentY*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+             		gContext.drawImage(dirtImage,currentX*CELL_SIZE, currentY*CELL_SIZE);
+				
+//					gContext.clearRect(robotDown,currentX*CELL_SIZE + CELL_SIZE/2,
+//                 currentY*CELL_SIZE + CELL_SIZE/2,CELL_SIZE);
+					currentY++;
+					
+					
+             		if (programRunning === false && recordInput === true) {
+             			program.addInstruction(instruction.DOWN);
+             		}
+             		displayProgram();
+             		drawRobotDown();
+             		console.log("current x is " + currentX + " current y is " + currentY);
+      			}    
+      		}
+      		else if(currentX == 9 && currentY == 19){ //if exiting down...
+                loadGridDown();
+                console.log("I'm in the right square to exit down!");
+      		}
+    	}
+    }    
+    function moveUp(){
+    	if (recordInput === true) {
+    		program.addInstruction(instruction.UP);
+    		displayProgram();
+    	}
+    	else if (currentY > 0){
+           if (grid[currentY-1][currentX]===OPEN){ //if spot above is open..
+               gContext.clearRect(currentX*CELL_SIZE,currentY*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+               gContext.drawImage(dirtImage,currentX*CELL_SIZE, currentY*CELL_SIZE);
+               currentY--;
+               if (programRunning === false && recordInput === true) {
+               		program.addInstruction(instruction.UP);
+               }
+               displayProgram();
+               drawRobotUp();
+               console.log("current x is " + currentX + " current y is " + currentY);
+           }
+        }     
+        else if(currentX == 9 && currentY == 0){ //if exiting up...
+                loadGridUp();
+                console.log("I'm in the right square to exit up!");
+        }
+    }
+    function moveRight(){
+    	if (recordInput === true) {
+    		program.addInstruction(instruction.RIGHT);
+    		displayProgram();
+    	} else
+        if (currentX < gridWidth-1){
+             if (grid[currentY][currentX+1]===OPEN){
+                 gContext.clearRect(currentX*CELL_SIZE,currentY*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                 gContext.drawImage(dirtImage,currentX*CELL_SIZE, currentY*CELL_SIZE);
+                 currentX++;
+                 if (programRunning === false && recordInput === true) {
+                 	program.addInstruction(instruction.RIGHT);
+                 }
+                 displayProgram();
+                 drawRobotRight();
+                 console.log("current x is " + currentX);
+                 console.log("current y is " + currentY);
+             }      
+        }
+        else if(currentX == 19 && currentY == 9){ //if exiting right
+                loadGridRight();
+                console.log("I'm in the right square to exit!");
+        } 
+    }    
+    function moveLeft(){
+    	if (recordInput === true) {
+    		program.addInstruction(instruction.LEFT);
+    		displayProgram();
+    	} else if (currentX > 0){
+           if (grid[currentY][currentX-1]===OPEN){ //if spot to left is open..
+             gContext.clearRect(currentX*CELL_SIZE,currentY*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+             gContext.drawImage(dirtImage,currentX*CELL_SIZE, currentY*CELL_SIZE);
+             currentX--;
+             if (programRunning === false && recordInput === true) {
+             	program.addInstruction(instruction.LEFT);
+             }
+             displayProgram();
+             drawRobotLeft();
+               console.log("current x is " + currentX);
+                 console.log("current y is " + currentY);
+           }
+        } 
+         else if(currentX == 0 && currentY == 9){ //if exiting left
+                loadGridLeft();
+                console.log("I'm in the right square to exit!");
+        } 
+    }           
+    function loadGridUp(){ //load up, enter bottom of next room!
+        gContext.clearRect(currentX*CELL_SIZE,currentY*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+        currentRoomX--; //move to the room above!
+        currentRoom= map[currentRoomX][currentRoomY];
+        drawGrid(currentRoom);
+        grid= currentRoom;
+        enterDownDoor();
+    }    
+    function loadGridDown(){
+        gContext.clearRect(currentX*CELL_SIZE,currentY*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+        currentRoomX++; //move to the room to the room below!
+        currentRoom= map[currentRoomX][currentRoomY];
+        drawGrid(currentRoom);
+        grid= currentRoom;
+        enterUpDoor();
+    }
+    function loadGridLeft(){ //load left, enter right!
+        gContext.clearRect(currentX*CELL_SIZE,currentY*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+        currentRoomY--; //move to the room to the left!
+        currentRoom= map[currentRoomX][currentRoomY];
+        drawGrid(currentRoom);
+        grid= currentRoom;
+        enterRightDoor();
+    }
+    function loadGridRight(){ //load right, enter left
+        gContext.clearRect(currentX*CELL_SIZE,currentY*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+        currentRoomY++; //move to the room to the right!
+        currentRoom= map[currentRoomX][currentRoomY];
+        drawGrid(currentRoom);
+        grid= currentRoom;
+        enterLeftDoor();
+    }
+    function enterLeftDoor(){
+        currentX= 0;
+        currentY= 9;     
+        drawRobotRight();
+    }
+    function enterRightDoor(){
+        currentX= 19;
+        currentY= 9;     
+        drawRobotLeft();
+    }
+    function enterDownDoor(){
+        currentX= 9;
+        currentY= 19;     
+        drawRobotUp();
+    }
+    function enterUpDoor(){
+        console.log("hey i tried to move to the upper door...");
+        currentX= 9;
+        currentY= 0;     
+        drawRobotDown();
+    }
+    
+    function drawRobotDown(){
+		
+//		var counter = 0;
+//		for (counter=0; counter <10; counter++){
+//		
+//		setTimeout(function(){  
+//		currentY+= 2; 
+//		gContext.drawImage(robotDown,currentX*CELL_SIZE,currentY*CELL_SIZE);	}, 100);
+		
+		gContext.drawImage(robotDown,currentX*CELL_SIZE,currentY*CELL_SIZE);
+	
+    }
+	
+	function drawRobotUp(){
+		
+		gContext.drawImage(robotUp,currentX*CELL_SIZE,currentY*CELL_SIZE);
+		
+    }
+	
+	function drawRobotLeft(){
+		
+		gContext.drawImage(robotLeft,currentX*CELL_SIZE,currentY*CELL_SIZE);
+		
+    }
+	
+	function drawRobotRight(){
+		
+		gContext.drawImage(robotRight,currentX*CELL_SIZE,currentY*CELL_SIZE);
+		
+    }
+	
+	
+	
+	$(document).ready(function() {
+
+
+	});
+	
+</script>
+</head>
+<body>
+	<div class="controlPanel">
+		<button class="moveUp">UP</button> <br />
+		<button class="moveDown">DOWN</button> <br />
+		<button class="moveLeft">LEFT</button> <br />
+		<button class="moveRight">RIGHT</button> <br />
+		<button class="startRecord">RECORD PROGRAM</button> <br />
+		<button class="stopRecord">STOP RECORD</button> <br />
+		<button class="runProgram">RUN PROGRAM</button> <br />
+		<button class="stopProgram">STOP PROGRAM</button> <br />
+		<button class="clearProgram">CLEAR PROGRAM</button>
+	</div>
+	<div class="programListing">
+	    <ol>
+	       <!--  <li> LEFT  -->
+	       <!--  <li> DOWN  -->
+	    </ol>
+	</div>
+	<canvas id="cellRoom" class="cellRoom" width="400" height="400"
+		style="border: 1px solid">
+	   
+	   </canvas>
+
+</body>
+</html>
