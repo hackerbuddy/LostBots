@@ -226,7 +226,7 @@ function actionOnClick () {  //only load and new game buttons do this
     group.ignoreChildInput= true;
     closeMenu();
     menutrack.stop();
-    soundtrack.play();
+    soundTrack.play();
     
 }
     

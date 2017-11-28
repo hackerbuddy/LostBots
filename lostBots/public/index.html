@@ -118,7 +118,7 @@
     	 var canvas;
     	 var gContext;
         
-    	 var soundTrack= new Audio("resources/sounds/lostBotsOST.mp3");
+    	 var soundTrack= new Audio("resources/sounds/MainGameMusic.mp3");
          soundTrack.addEventListener('ended', function() {
              this.currentTime = 0;
              this.play();
@@ -797,6 +797,7 @@
     </script>
 </head>
 <body>
+    <div id="main-menu" style="display: inline-block"></div>
     <div id="main-game">
         <div class="controlPanel">
             <button class="moveUp">UP</button> <br />
