@@ -37,7 +37,7 @@ function preload() {
  
 }
 
-//var button;
+//global variables--important in gaming
 var background;
 var fx;
 var sprite;
@@ -46,6 +46,7 @@ var creditsMusic;
 var selectedBeep;
 var counter= 0;
 var creditsCounter=0;
+var startGameCounter=0;
 var text= 0;
 var content = [
     " ",
@@ -57,7 +58,7 @@ var text;
 var playCredits= false;
 var index = 0;
 var line = '';
-var startGame= true;
+var startGame= false;
 var creditsSprite;
 var gamerSprite;        
 var wergelesSprite;
@@ -87,7 +88,7 @@ function updateCounter() {
     console.log("counter is at " + counter + " and creditsCounter is " + creditsCounter);
     
     /////////start menu/////////////////////////
-            if (counter ==4 && !playCredits){
+            if (counter ==4 && !playCredits){ //if seconds is 4, and don't play credits
                 //fade out dude
                  game.add.tween(gamerSprite).to( { alpha: 0 }, 1500, Phaser.Easing.Linear.None, true);
             
@@ -117,6 +118,8 @@ function updateCounter() {
                 menutrack.play();
             }
 
+        //timing the credits events
+    
         if (playCredits && creditsCounter== 3){
         group.ignoreChildInput= true;
             
@@ -132,6 +135,16 @@ function updateCounter() {
         game.add.tween(creditsSprite).to( { alpha: 0 }, 2000, Phaser.Easing.Linear.None, true);
         }
         
+        //timing the transition between menu and game
+    
+        if (startGame && !playCredits){
+            startGameCounter++;
+            
+            if (startGameCounter== 3){
+                 closeMenu(); //quit the menu, after 2 seconds of fade
+            }
+            
+        }
     
     
   console.log("counter inside update functon is " + counter);
@@ -207,6 +220,7 @@ function mainMenu(){
 function hoverOver(){
     console.log('i hovered over stuff!');
     fx.play('pop');
+    
 }        
         
 function over() {
@@ -222,16 +236,16 @@ function actionOnClick () {  //only load and new game buttons do this
    // background.visible =! background.visible;
     selectedBeep.play();
     console.log('a button was clicked!');
-    game.camera.fade(0x000000, 1500);//fade the game
+    game.camera.fade(0x000000, 2000);//fade the game
     group.ignoreChildInput= true;
-    closeMenu();
-    menutrack.stop();
-    soundTrack.play();
-    
+    startGame= true;
 }
     
         
-function closeMenu() {   
+function closeMenu() {
+    menutrack.stop(); //stop menu music
+    soundTrack.play(); //start in game music
+    game.paused= true;
     document.getElementById("main-menu").style.visibility= "hidden";
     document.getElementById("main-game").style.display="inline-block";
 }        
