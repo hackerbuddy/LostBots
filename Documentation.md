@@ -22,12 +22,12 @@ This is a game to teach how to use algorithms. The controls are simple, click on
 The Global Chat system is located on the right of the screen. To start chatting, enter a nickname into the input box and press enter. The message input box will appear and you may start chatting in the message box. To hide the chat, press the green button marked with an arrow and it will hide. Pressing the green button again will show the chat.
 
 ## What technologies we used and links to sources
-Trivial Technologies: HTML5, CSS3, Javascript, Jquery
-[Phaser.io](http://phaser.io/): Animation, gaming framework built with javascript that streamlines game creation in web.
-[Socket.io](https://socket.io/): Broadcasting API that allows updating multiple clients with very little code.
-[Node.js](https://nodejs.org/en/docs/): Main backend framework used to create the server.
-[Express.js](https://expressjs.com/en/4x/api.html): Node middleware that handles many of the servers ajax requests.
-Forever.js: Node middleware that allows a script to run forever.
+* Trivial Technologies: HTML5, CSS3, Javascript, Jquery
+* [Phaser.io](http://phaser.io/): Animation, gaming framework built with javascript that streamlines game creation in web.
+* [Socket.io](https://socket.io/): Broadcasting API that allows updating multiple clients with very little code.
+* [Node.js](https://nodejs.org/en/docs/): Main backend framework used to create the server.
+* [Express.js](https://expressjs.com/en/4x/api.html): Node middleware that handles many of the servers ajax requests.
+* Forever.js: Node middleware that allows a script to run forever.
 
 ## Who did what
 Braden worked largely on the frontend using Javascript and Phaser.io to produce the game. He also created the images and music for the game.
