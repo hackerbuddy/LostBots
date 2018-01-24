@@ -701,79 +701,83 @@
 		$(".foodAmount").text(totalFood);
 	}
 	
-     $(document).ready(function(){
-            canvas = document.getElementById("cellRoom");
-            gContext = canvas.getContext('2d');  // setup graphic context
+     $(document).ready(function() {
+         canvas = document.getElementById("cellRoom");
+         gContext = canvas.getContext('2d');  // setup graphic context
 
-            totalFood = initialFoodAmount;
-            displayTotalFood();
-            // document.getElementById("ShadowColorSample").getContext('2d');
-            gContext.fillStyle = 'green';
-            document.addEventListener("keydown", keyDownHandler, false);
-            init(program);
-           // document.addEventListener("keyup", keyUpHandler, false);  	    
-            drawGrid (ctrlRoom);
-            grid= ctrlRoom;
-            drawRobotDown(); //draw robot for the first time
+         totalFood = initialFoodAmount;
+         displayTotalFood();
+         // document.getElementById("ShadowColorSample").getContext('2d');
+         gContext.fillStyle = 'green';
+         document.addEventListener("keydown", keyDownHandler, false);
+         init(program);
+         // document.addEventListener("keyup", keyUpHandler, false);
+         drawGrid(ctrlRoom);
+         grid = ctrlRoom;
+         drawRobotDown(); //draw robot for the first time
 
-            $("div.controlPanel .moveUp").on('click', function() {
-                moveUp();
-            } );
-            $("div.controlPanel .moveDown").on('click', function() {
-                moveDown();
-            } );
-            $("div.controlPanel .moveLeft").on('click', function() {
-                moveLeft();
-            } );
-            $("div.controlPanel .moveRight").on('click', function() {
-                moveRight();
-            } );
-             $("div.controlPanel .loopProgram").on('click', function() {
-                if (!infiniteLoop){
-                 infiniteLoop= true;
-                }
-                 else{
-                 infiniteLoop= false;
-                 }
-            } );
-            $("div.controlPanel .startRecord").on('click', function() {
-                recordInput = true;
-                $("div.controlPanel").find(".stopRecord").prop("disabled", false);
-                $("div.controlPanel").find(".startRecord").prop("disabled", true);
-                $("div.controlPanel .runProgram").prop("disabled", true);
-            });
-            $("div.controlPanel .stopRecord").on('click', function() {
-                recordInput = false;
-                $("div.controlPanel").find(".stopRecord").prop("disabled", true);
-                $("div.controlPanel").find(".startRecord").prop("disabled", false);
-                $("div.controlPanel .runProgram").prop("disabled", false);
-            });
+         $("div.controlPanel .moveUp").on('click', function () {
+             moveUp();
+         });
+         $("div.controlPanel .moveDown").on('click', function () {
+             moveDown();
+         });
+         $("div.controlPanel .moveLeft").on('click', function () {
+             moveLeft();
+         });
+         $("div.controlPanel .moveRight").on('click', function () {
+             moveRight();
+         });
+         $("div.controlPanel .loopProgram").on('click', function () {
+             if (!infiniteLoop) {
+                 infiniteLoop = true;
+             }
+             else {
+                 infiniteLoop = false;
+             }
+         });
+         $("div.controlPanel .startRecord").on('click', function () {
+             recordInput = true;
+             $("div.controlPanel").find(".stopRecord").prop("disabled", false);
+             $("div.controlPanel").find(".startRecord").prop("disabled", true);
+             $("div.controlPanel .runProgram").prop("disabled", true);
+         });
+         $("div.controlPanel .stopRecord").on('click', function () {
+             recordInput = false;
+             $("div.controlPanel").find(".stopRecord").prop("disabled", true);
+             $("div.controlPanel").find(".startRecord").prop("disabled", false);
+             $("div.controlPanel .runProgram").prop("disabled", false);
+         });
 
-            $("div.controlPanel .runProgram").on('click', function() {
-                programRunning = true;
-                $("div.controlPanel").find(".moveUp, .moveDown, .moveLeft, .moveRight, .runProgram").prop("disabled", true);
-                $("div.controlPanel").find(".stopProgram").prop("disabled", false);
-                restartProgram(program);
-                execNextProgramStep(program);
-            });
-            $("div.controlPanel .stopProgram").on('click', function() {
-                stopProgram();
-            });
-            $("div.controlPanel .clearProgram").on('click', function() {
-                init(program);
-                displayProgram();
-            });
-            $("div.controlPanel").find(".stopProgram").prop("disabled", true);
-            $("div.controlPanel").find(".stopRecord").prop("disabled", true);
-            $("div.programListing").on('click', 'span.increaseRepetions', function () {
-                increaseRrepetitionCount(program, $(this).data("loc"));
-                displayProgram();
-            });
+         $("div.controlPanel .runProgram").on('click', function () {
+             programRunning = true;
+             $("div.controlPanel").find(".moveUp, .moveDown, .moveLeft, .moveRight, .runProgram").prop("disabled", true);
+             $("div.controlPanel").find(".stopProgram").prop("disabled", false);
+             restartProgram(program);
+             execNextProgramStep(program);
+         });
+         $("div.controlPanel .stopProgram").on('click', function () {
+             stopProgram();
+         });
+         $("div.controlPanel .clearProgram").on('click', function () {
+             init(program);
+             displayProgram();
+         });
+         $("div.controlPanel").find(".stopProgram").prop("disabled", true);
+         $("div.controlPanel").find(".stopRecord").prop("disabled", true);
+         $("div.programListing").on('click', 'span.increaseRepetions', function () {
+             increaseRrepetitionCount(program, $(this).data("loc"));
+             displayProgram();
+         });
          $("div.programListing").on('click', 'span.decreaseRepetions', function () {
              decreaseRrepetitionCount(program, $(this).data("loc"));
              displayProgram();
          });
-        });
+         $("div.programListing").on('click', 'span.deleteInstrution', function () {
+             deleteInstruction(program, $(this).data("loc"));
+             displayProgram();
+         });
+     })
 </script>
     <!-- Chatbox Code -->
  <!--   <script src="/socket.io/socket.io.js"></script>  -->

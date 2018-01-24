@@ -105,7 +105,7 @@ var currentInstruction;
 	}
 
 	function deleteInstruction(program, location) {         // deleteInstruction, removes an instruction from memory
-		program.instructionList.slice(location, 1)
+		program.instructionList.splice(location, 1)
 	}
 
 	function programSize(program) {                      // programSize, returns the number of instructions in the program
