@@ -244,7 +244,7 @@ function actionOnClick () {  //only load and new game buttons do this
         
 function closeMenu() {
     menutrack.stop(); //stop menu music
-    soundTrack.play(); //start in game music
+    // soundTrack.play(); //start in game music  // TODO commented out by Ted on Jan 20, 2018
     game.paused= true;
     document.getElementById("main-menu").style.visibility= "hidden";
     document.getElementById("main-game").style.display="inline-block";

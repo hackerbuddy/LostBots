@@ -14,6 +14,9 @@
     background: black;
     color: green;
 }
+.deleteInstrution {
+    color: red;
+}
 </style>
 <script type="text/javascript">    
     
@@ -123,7 +126,7 @@
              this.currentTime = 0;
              this.play();
          }, false);
-//         soundTrack.play();
+        soundTrack.play();
          
          var dirtImage = new Image(20, 20);
          dirtImage.src = "resources/images/dirt.png";
@@ -198,7 +201,7 @@
             }
          }
      }
-    
+
     imagesInit(dirtImage);
     imagesInit(stoneImage);
     imagesInit(plainWallImage);
@@ -244,8 +247,8 @@
 			$(".programListing ol li").removeClass("currentInstruction");
 	 }
 	 function execCurrentInstruction() {
-		 instr = execInstruction(program);
-		 switch (instr.opCode) {
+		 opCode = execInstruction(program);
+		 switch (opCode) {
 			case Instruction.UP:
 				moveUp();
 				break;
@@ -361,13 +364,19 @@
                 
 	      }
      }
-    
+
+    function genProgramIcons( loc) {
+	     return "<span class='deleteInstrution' data-loc='"+ loc + "'>X</span>"
+             + "&nbsp;<span class='increaseRepetions' data-loc='" + loc + "'>+</span>"
+             + "&nbsp;<span class='decreaseRepetions' data-loc='" + loc + "'>-</span>";
+    }
 	function displayProgram() {
 		$(".programListing ol li").remove();
 		for (var loc = 0; loc < programSize(program); loc++) {
 			instr = getProgramInstruction(program, loc);
-			console.log("loc: " + loc + "  " + getDescrisption(instr) );
-			$(".programListing ol").append("<li>" + getDescrisption(instr));
+			console.log("loc: " + loc + "  " + getDescrisption(instr) + genProgramIcons(loc) );
+			var listItem = "<li>" + getDescrisption(instr) + genProgramIcons(loc) +"</li>";
+			$(".programListing ol").append(listItem);
 		}
 		$(".programListing ol li").eq(getProgramCounter(program)).addClass("currentInstruction");
 	} 
@@ -756,44 +765,52 @@
             });
             $("div.controlPanel").find(".stopProgram").prop("disabled", true);
             $("div.controlPanel").find(".stopRecord").prop("disabled", true);
+            $("div.programListing").on('click', 'span.increaseRepetions', function () {
+                increaseRrepetitionCount(program, $(this).data("loc"));
+                displayProgram();
+            });
+         $("div.programListing").on('click', 'span.decreaseRepetions', function () {
+             decreaseRrepetitionCount(program, $(this).data("loc"));
+             displayProgram();
+         });
         });
 </script>
     <!-- Chatbox Code -->
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="resources/js/jquery-ui.min.js"></script>
+ <!--   <script src="/socket.io/socket.io.js"></script>  -->
+ <!--   <script src="resources/js/jquery-ui.min.js"></script> -->
     <script>
-        $(function () {
-            var socket = io();
-            
-            $('#chatClose').click(function(){
-                $('.chatBox').hide("slide", {direction: "right"}, function(){
-                    $('#chatOpen').show();
-                });
-            });
-            
-            $('#chatOpen').click(function(){
-                $('#chatOpen').hide("highlight", "fast", function(){
-                    $('.chatBox').show("slide", {direction: "right"});
-                });
-            });
-            
-            $('#chatform').submit(function(){
-                socket.emit('chat message', $('#m').val());
-                $('#m').val('');
-                return false;
-            });
-            $('chatform').hide();
-            
-            $('#userNickname').submit(function(){
-                socket.emit('add user', $('#name').val());
-                $('#userNickname').hide();
-                $('chatform').show();
-                return false;
-            })
-            socket.on('chat message', function(data){
-                $('#messages').append($('<li>').text(data.username +": " + data.message));
-            });
-  });
+//        $(function () {
+//            var socket = io();
+//
+//            $('#chatClose').click(function(){
+//                $('.chatBox').hide("slide", {direction: "right"}, function(){
+//                    $('#chatOpen').show();
+//                });
+//            });
+//
+//            $('#chatOpen').click(function(){
+//                $('#chatOpen').hide("highlight", "fast", function(){
+//                    $('.chatBox').show("slide", {direction: "right"});
+//                });
+//            });
+//
+//            $('#chatform').submit(function(){
+//                socket.emit('chat message', $('#m').val());
+//                $('#m').val('');
+//                return false;
+//            });
+//            $('chatform').hide();
+//
+//            $('#userNickname').submit(function(){
+//                socket.emit('add user', $('#name').val());
+//                $('#userNickname').hide();
+//                $('chatform').show();
+//                return false;
+//            })
+//            socket.on('chat message', function(data){
+//                $('#messages').append($('<li>').text(data.username +": " + data.message));
+//            });
+//  });
     </script>
 </head>
 <body>

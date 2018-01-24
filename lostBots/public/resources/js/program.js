@@ -41,6 +41,8 @@ function getDescrisption(instr) {  // The method getDescription returns a String
 function Instruction(code, repCount) {
     this.opCode = code;
     this.repetitionCount = repCount;
+    this.remainingCount = repCount;
+    return this;
 }
 
    //The program is an object (class) the stores the instruction in an array.
@@ -49,6 +51,11 @@ function Program() {
     programCounter = 0;
     instructionList = new Array();
 }
+
+var stopInstruction = new Object();
+stopInstruction.opCode = Instruction.STOP;
+stopInstruction.repetitionCount = 0;
+var currentInstruction;
 
 	function init (program) {                     // init() is a function that initializes (or resets) the variables in the object
 											// the variables in the program.  Note the it also erases the current program, if there is one.
@@ -62,13 +69,24 @@ function Program() {
 
 	function execInstruction(program) {        // execInstruction, returns the next instruction, moving the program
 		                                  // counter to the next instruction.
-		if (program.programCounter >= program.instructionList.length) {  // If at the end of the program return the STOP instruction
-			return Instruction.STOP;
+		if (currentInstruction != null && currentInstruction.remainingCount > 0 ) {
+			currentInstruction.remainingCount--;
+			return currentInstruction.opCode;
 		}
-		return program.instructionList[program.programCounter++];
+		if (program.programCounter >= program.instructionList.length) {  // If at the end of the program return the STOP instruction
+			return stopInstruction.opCode;
+		}
+        currentInstruction = program.instructionList[program.programCounter++];
+		currentInstruction.remainingCount = currentInstruction.repetitionCount - 1;
+		return currentInstruction.opCode;
 	}
 
-
+    function increaseRrepetitionCount(program, location) {
+		program.instructionList[location].repetitionCount++;
+	}
+    function decreaseRrepetitionCount(program, location) {
+        program.instructionList[location].repetitionCount--;
+    }
 	function restartProgram(program) {                // Sets the program counter back to zero so the program can be run again
 		program.programCounter = 0;
 	}
@@ -76,6 +94,9 @@ function Program() {
 		return program.instructionList[location];
 	}
 	function getProgramCounter(program) {                // return the program conter
+        if (typeof (currentInstruction) !== "undefined" && currentInstruction.remainingCount > 0) {
+            return program.programCounter - 1;
+        }
 		return program.programCounter;
 	}
 	function setInstruction(program, location, opCode, repCount) {     // chang an instruction at a specied plave in memory
