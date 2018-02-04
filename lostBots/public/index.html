@@ -3,6 +3,7 @@
 <link rel="stylesheet" href="./resources/css/chatbox.css">
 <link rel="stylesheet" href="resources/css/amazingBots.css">
 <script src="resources/js/jquery-3.2.1.js"></script>
+<script src="resources/js/jquery-ui.min.js"></script>
 <script src="resources/js/rooms.js"></script>   
 <script src="resources/js/program.js"></script>
 <!--Phaser CDN-->
@@ -122,11 +123,11 @@
     	 var gContext;
         
     	 var soundTrack= new Audio("resources/sounds/MainGameMusic.mp3");
-         soundTrack.addEventListener('ended', function() {
-             this.currentTime = 0;
-             this.play();
-         }, false);
-        soundTrack.play();
+         //soundTrack.addEventListener('ended', function() {
+         //    this.currentTime = 0;
+         //    this.play();
+         //}, false);
+        // soundTrack.play();
          
          var dirtImage = new Image(20, 20);
          dirtImage.src = "resources/images/dirt.png";
@@ -233,10 +234,10 @@
 		 if (programRunning) {
 		 	setTimeout(function() { execNextProgramStep(program); }, 200);
 		 	var pc = getProgramCounter(program);
-		 	var instructionList = $(".programListing ol li");
-		 	$(instructionList).eq(pc - 1).removeClass("currentInstruction");
-		 	$(instructionList).eq(pc).addClass("currentInstruction");
-		 	execCurrentInstruction();
+		 	var statementList = $(".programListing ol li");
+		 	$(statementList).eq(pc - 1).removeClass("currentInstruction");
+		 	$(statementList).eq(pc).addClass("currentInstruction");
+		 	execCurrentStatement();
 		 }
 	 }
 	 function stopProgram() {
@@ -246,8 +247,8 @@
 			$(controlPanel).find(".stopProgram").prop("disabled", true);
 			$(".programListing ol li").removeClass("currentInstruction");
 	 }
-	 function execCurrentInstruction() {
-		 opCode = execInstruction(program);
+	 function execCurrentStatement() {
+		 opCode = execStatement(program);
 		 switch (opCode) {
 			case Instruction.UP:
 				moveUp();
@@ -276,7 +277,6 @@
 	    			
 	      if (grid[i][j] == WALL) {
 	           gContext.drawImage(plainWallImage, j * CELL_SIZE, i * CELL_SIZE);
-              
 	    		 } else if (grid[i][j] == FOOD) {
 	    		    	gContext.drawImage(foodBarrelImage, j * CELL_SIZE, i * CELL_SIZE);	
 					    }         
@@ -367,15 +367,16 @@
 
     function genProgramIcons( loc) {
 	     return "<span class='deleteInstrution' data-loc='"+ loc + "'>X</span>"
-             + "&nbsp;<span class='increaseRepetions' data-loc='" + loc + "'>+</span>"
-             + "&nbsp;<span class='decreaseRepetions' data-loc='" + loc + "'>-</span>";
+             + "&nbsp;<span class='increaseRepetions'>+</span>"
+             + "&nbsp;<span class='decreaseRepetions'>-</span>";
     }
 	function displayProgram() {
 		$(".programListing ol li").remove();
 		for (var loc = 0; loc < programSize(program); loc++) {
-			instr = getProgramInstruction(program, loc);
-			console.log("loc: " + loc + "  " + getDescrisption(instr) + genProgramIcons(loc) );
-			var listItem = "<li>" + getDescrisption(instr) + genProgramIcons(loc) +"</li>";
+			statement = getProgramStatement(program, loc);
+			console.log("loc: " + loc + "  " + getDescrisption(statement) + genProgramIcons(loc) );
+			var listItem = "<li data-opCode='" + statement.opCode + "' data-repCount='" + statement.repetitionCount + "' " +
+                " data-loc='" + loc + "'>" + getDescrisption(statement) + genProgramIcons(statement) +"</li>";
 			$(".programListing ol").append(listItem);
 		}
 		$(".programListing ol li").eq(getProgramCounter(program)).addClass("currentInstruction");
@@ -407,10 +408,10 @@
     
     function moveDown(){
     	if (recordInput === true) {
-            obj = new Object;
+            obj = { };
             obj.opCode = Instruction.DOWN;
             obj.repetitionCount = 1;
-            addInstruction(program, obj);
+            addStatement(program, obj);
             displayProgram();
     	} 
         else if (currentY < gridHeight-1){
@@ -456,10 +457,10 @@
     }    
     function moveUp(){
     	if (recordInput === true) {
-            obj = new Object;
+            obj = { };
             obj.opCode = Instruction.UP;
             obj.repetitionCount = 1;
-            addInstruction(program, obj);
+            addStatement(program, obj);
     		displayProgram();
     	}
     	else if (currentY > 0){
@@ -504,10 +505,10 @@
     }
     function moveRight(){
     	if (recordInput === true) {
-            obj = new Object;
+            obj = { };
             obj.opCode = Instruction.RIGHT;
             obj.repetitionCount = 1;
-            addInstruction(program, obj);
+            addStatement(program, obj);
     		displayProgram();
     	} else
         if (currentX < gridWidth-1){
@@ -553,10 +554,10 @@
     }    
     function moveLeft(){
     	if (recordInput === true) {
-            obj = new Object;
+            obj = { };
             obj.opCode = Instruction.LEFT;
             obj.repetitionCount = 1;
-            addInstruction(program, obj);
+            addStatement(program, obj);
     		displayProgram();
     	} else if (currentX > 0){
             
@@ -766,17 +767,26 @@
          $("div.controlPanel").find(".stopProgram").prop("disabled", true);
          $("div.controlPanel").find(".stopRecord").prop("disabled", true);
          $("div.programListing").on('click', 'span.increaseRepetions', function () {
-             increaseRrepetitionCount(program, $(this).data("loc"));
+             increaseRrepetitionCount(program, $(this).parent().data("loc"));
              displayProgram();
          });
          $("div.programListing").on('click', 'span.decreaseRepetions', function () {
-             decreaseRrepetitionCount(program, $(this).data("loc"));
+             decreaseRrepetitionCount(program, $(this).parent().data("loc"));
              displayProgram();
          });
          $("div.programListing").on('click', 'span.deleteInstrution', function () {
-             deleteInstruction(program, $(this).data("loc"));
+             deleteStatement(program, $(this).data("loc"));
              displayProgram();
          });
+         $(".programListing ol").sortable({
+             update: function (event, ui) {
+                $(".programListing li").each( function(index, val){
+                    console.log("At location: " + index + " opcode: " + $(this).data("opcode") );
+                    setStatement(program, index, $(this).data("opcode"), $(this).data("repcount"));
+                 });
+             }
+         });
+
      })
 </script>
     <!-- Chatbox Code -->

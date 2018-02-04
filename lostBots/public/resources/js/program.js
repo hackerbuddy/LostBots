@@ -13,9 +13,9 @@ var Instruction = {
     opCode: 0
 };
 
-function getDescrisption(instr) {  // The method getDescription returns a String
-    // representing the instruction
-    switch (instr.opCode) {
+function getDescrisption(statement) {  // The method getDescription returns a String
+    // representing the statement
+    switch (statement.opCode) {
         case Instruction.UP:
             str = "UP";
             break;
@@ -35,84 +35,85 @@ function getDescrisption(instr) {  // The method getDescription returns a String
             str = "OTHER";
             break;
     }
-    return str + "&nbsp;" + instr.repetitionCount;
+    return str + "&nbsp;" + statement.repetitionCount;
 }
 
-function Instruction(code, repCount) {
-    this.opCode = code;
-    this.repetitionCount = repCount;
-    this.remainingCount = repCount;
-    return this;
+function createStatement(code, repCount) {
+	obj = { };
+    obj.opCode = code;
+    obj.repetitionCount = repCount;
+    obj.remainingCount = repCount;
+    return obj;
 }
 
    //The program is an object (class) the stores the instruction in an array.
    // The important thing is they are stored in an ordered structure.
 function Program() {
     programCounter = 0;
-    instructionList = new Array();
+    statementList = new Array();
 }
 
-var stopInstruction = new Object();
-stopInstruction.opCode = Instruction.STOP;
-stopInstruction.repetitionCount = 0;
-var currentInstruction;
+var stopStatement = { };
+stopStatement.opCode = Instruction.STOP;
+stopStatement.repetitionCount = 0;
+var currentStatement;
 
 	function init (program) {                     // init() is a function that initializes (or resets) the variables in the object
 											// the variables in the program.  Note the it also erases the current program, if there is one.
-		program.instructionList = new Array();
+		program.statementList = [];
 		program.programCounter = 0;
 	}
 
-	function addInstruction(program, instr) {    // this function adds an instruction to the end of the program.
-		program.instructionList.push(instr);
+	function addStatement(program, statement) {    // this function adds an statement to the end of the program.
+		program.statementList.push(statement);
 	}
 
-	function execInstruction(program) {        // execInstruction, returns the next instruction, moving the program
+	function execStatement(program) {        // execInstruction, returns the next instruction, moving the program
 		                                  // counter to the next instruction.
-		if (currentInstruction != null && currentInstruction.remainingCount > 0 ) {
-			currentInstruction.remainingCount--;
-			return currentInstruction.opCode;
+		if (currentStatement != null && currentStatement.remainingCount > 0 ) {
+			currentStatement.remainingCount--;
+			return currentStatement.opCode;
 		}
-		if (program.programCounter >= program.instructionList.length) {  // If at the end of the program return the STOP instruction
-			return stopInstruction.opCode;
+		if (program.programCounter >= program.statementList.length) {  // If at the end of the program return the STOP statement
+			return stopStatement.opCode;
 		}
-        currentInstruction = program.instructionList[program.programCounter++];
-		currentInstruction.remainingCount = currentInstruction.repetitionCount - 1;
-		return currentInstruction.opCode;
+        currentStatement = program.statementList[program.programCounter++];
+		currentStatement.remainingCount = currentStatement.repetitionCount - 1;
+		return currentStatement.opCode;
 	}
 
     function increaseRrepetitionCount(program, location) {
-		program.instructionList[location].repetitionCount++;
+		program.statementList[location].repetitionCount++;
 	}
     function decreaseRrepetitionCount(program, location) {
-        program.instructionList[location].repetitionCount--;
+        program.statementList[location].repetitionCount--;
     }
 	function restartProgram(program) {                // Sets the program counter back to zero so the program can be run again
 		program.programCounter = 0;
 	}
-	function getProgramInstruction(program, location) {   //  return an instruction from the specified location
-		return program.instructionList[location];
+	function getProgramStatement(program, location) {   //  return an statememt from the specified location
+		return program.statementList[location];
 	}
 	function getProgramCounter(program) {                // return the program conter
-        if (typeof (currentInstruction) !== "undefined" && currentInstruction.remainingCount > 0) {
+        if (typeof (currentStatement) !== "undefined" && currentStatement.remainingCount > 0) {
             return program.programCounter - 1;
         }
 		return program.programCounter;
 	}
-	function setInstruction(program, location, opCode, repCount) {     // chang an instruction at a specied plave in memory
-        instr = new Instruction(opCode, repCount);
-		program.instructionList[location] = instr;
+	function setStatement(program, location, opCode, repCount) {     // change an statement at a specified plave in the list
+        statement = createStatement(opCode, repCount);
+		program.statementList[location] = statement;
 	}
 
-	function deleteInstruction(program, location) {         // deleteInstruction, removes an instruction from memory
-		program.instructionList.splice(location, 1)
+	function deleteStarement(program, location) {         // deleteInstruction, removes an instruction from memory
+		program.statementList.splice(location, 1)
 	}
 
-	function programSize(program) {                      // programSize, returns the number of instructions in the program
-		return program.instructionList.length;
+	function programSize(program) {                      // programSize, returns the number of statements in the program
+		return program.statementList.length;
 	}
-	function setCurrInstruction(program, loc) {                // setCurrentInstruction sets the value of the program counter
-		if (loc >= 0 && loc < program.instructionList.length) {
+	function setCurrStatement(program, loc) {                // setCurrentStatement sets the value of the program counter
+		if (loc >= 0 && loc < program.statementList.length) {
 			program.programCounter = loc;
 		}
 	}
